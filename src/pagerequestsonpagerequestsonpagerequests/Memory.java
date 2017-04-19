@@ -1,31 +1,36 @@
 package pagerequestsonpagerequestsonpagerequests;
 
+/*
+ * Tyler Sefcik
+ * Assignment 3
+ */
+
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Memory {
 
 	private int size;
+	//Manipulation with LinkedList is faster than ArrayList because there is no bit shifting required in memory
 	LinkedList<Page> memFifo;
 	LinkedList<Page> memLru;
-	ArrayList<Page> listF;
-	ArrayList<Page> listL;
+	LinkedList<Page> listF;
+	LinkedList<Page> listL;
 	private int cacheHit;
 	private int cacheMiss;
 	private int numRequests;
-	private boolean hit;
+	private boolean interrupt;
 
 	Memory(int size){
 		this.size = size;
 		memFifo = new LinkedList<Page>();
 		memLru = new LinkedList<Page>();
-		listF = new ArrayList<Page>();
-		listL = new ArrayList<Page>();
+		listF = new LinkedList<Page>();
+		listL = new LinkedList<Page>();
 		cacheHit = 0;
 		cacheMiss = 0;
 		numRequests = 0;
-		hit = false;
+		interrupt = false;
 	}
 
 	/*
@@ -43,19 +48,19 @@ public class Memory {
 		numRequests++;
 		if (memFifo.size() < size && !memFifo.contains(p)) {
 			cacheMiss++;
-			hit = false;
+			interrupt = true;
 			listF.add(p);
 			memFifo.add(p);
 		} else if(memFifo.size() < size && memFifo.contains(p)) {
 			cacheHit++;
-			hit = true;
+			interrupt = false;
 		} else {
 			if (memFifo.contains(p)) {
 				cacheHit++;
-				hit = true;
+				interrupt = false;
 			} else {
 				cacheMiss++;
-				hit = false;
+				interrupt = true;
 				listF.add(p);
 				Page temp = listF.remove(0);
 				int index = memFifo.indexOf(temp);
@@ -82,21 +87,21 @@ public class Memory {
 		numRequests++;
 		if (memLru.size() < size && !memLru.contains(p)) {
 			cacheMiss++;
-			hit = false;
+			interrupt = true;
 			listL.add(p);
 			memLru.add(p);
 		} else if(memLru.size() < size && memLru.contains(p)) {
 			cacheHit++; 
-			hit = true;
+			interrupt = false;
 		} else {
 			if (memLru.contains(p)) {
 				cacheHit++;
-				hit = true;
+				interrupt = false;
 				listL.remove(p);
 				listL.add(p);
 			} else {
 				cacheMiss++;
-				hit = false;
+				interrupt = true;
 				listL.add(p);
 				Page temp = listL.remove(0);
 				int index = memLru.indexOf(temp);
@@ -130,28 +135,23 @@ public class Memory {
 		cacheHit = 0;
 		cacheMiss = 0;
 	}
-	
-	public void printMemoryF(){
-		for (int i = 0; i < memFifo.size(); i++) {
+
+	public void printMemory(LinkedList<Page> list){
+		for (int i = 0; i < list.size(); i++) {
 			System.out.print("Frame " + (i+1) + ":   ");
-			memFifo.get(i).printPage();
+			list.get(i).printPage();
 		}
-		if (hit == true) {
+
+		int j = list.size() + 1;
+		while (j < size + 1) {
+			System.out.println("Frame " + j + ":     ");
+			j++;
+		}
+
+		if (interrupt == true) {
 			System.out.println("***");
 		}
 		System.out.println();
 	}
-
-	public void printMemoryL(){
-		for (int i = 0; i < memLru.size(); i++) {
-			System.out.print("Frame " + (i+1) + ":   ");
-			memLru.get(i).printPage();
-		}
-		if (hit == true) {
-			System.out.println("***");
-		}
-		System.out.println();
-	}
-
 }
 

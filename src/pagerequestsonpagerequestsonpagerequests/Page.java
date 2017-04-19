@@ -1,5 +1,10 @@
 package pagerequestsonpagerequestsonpagerequests;
 
+/*
+ * Tyler Sefcik
+ * Assignment 3
+ */
+
 public class Page {
 	private int id;
 	Page previous;
@@ -27,10 +32,6 @@ public class Page {
 	
 	public void printPage(){
 		System.out.println(toString());
-	}
-	
-	public void printEmptyPage(){
-		System.out.println("      ");
 	}
 	
 }
